@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Layout</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .linear1 {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.2);
+            pointer-events: none;
+        }
+
+        @keyframes particles {
+            from {
+                transform: translateY(0) scale(1);
+            }
+            to {
+                transform: translateY(-100vh) scale(1.5);
+            }
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 1);
+            border-radius: 50%;
+            animation: particles 5s linear infinite;
+        }
+
+        .linear2 {
+            border: 2px solid lime;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px lime;
+            margin: 20px;
+        }
+
+        .btn {
+            background: lime;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: white;
+            color: lime;
+        }
+
+        #resultList {
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="linear1">
+        <div id="particles" class="particles"></div>
+    </div>
+    <div class="linear2">
+        <div>
+            <label>TextView 1:</label>
+            <span id="textview1"></span>
+        </div>
+        <div>
+            <label>TextView 2:</label>
+            <span id="textview2"></span>
+        </div>
+        <div>
+            <label>TextView 3:</label>
+            <span id="textview3"></span>
+        </div>
+        <button class="btn" id="checkResultBtn">Check Result</button>
+        <button class="btn" id="historyBtn">History</button>
+        <ul id="resultList"></ul>
+    </div>
+    <script>
+        // Particle Generation
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                const size = Math.random() * 5 + 2;
+                particle.classList.add('particle');
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // Timer Logic
+        const textview1 = document.getElementById('textview1');
+        const textview2 = document.getElementById('textview2');
+        const textview3 = document.getElementById('textview3');
+        const resultList = document.getElementById('resultList');
+        const checkResultBtn = document.getElementById('checkResultBtn');
+
+        let ksmod = {};
+        let interval;
+
+        function updateTimer() {
+            const calendar = new Date();
+            const seconds = calendar.getSeconds();
+            const remainingSeconds = 60 - seconds;
+            const minutes = calendar.getMinutes();
+            const totalMinutes = calendar.getHours() * 60 + minutes;
+
+            textview1.textContent = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+                + '1000' + (10001 + totalMinutes).toString();
+            textview2.textContent = `   00  :  ${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        interval = setInterval(updateTimer, 1000);
+
+        // Button Logic
+        checkResultBtn.addEventListener('click', () => {
+            if (ksmod[textview1.textContent] === 'true') {
+                alert('PLS WAIT FOR NEXT PERIOD');
+                return;
+            }
+
+            ksmod[textview1.textContent] = 'true';
+            const n = Math.floor(Math.random() * 6) + 1;
+            textview3.textContent = 'ANALYSING...';
+
+            setTimeout(() => {
+                const results = [
+                    'BIGG 6,8', 'SMALL 2,4', 'BIGG 5,7',
+                    'SMALL 1,4', 'BIGG 6,9', 'SMALL 0,3'
+                ];
+                const result = results[n - 1];
+                textview3.textContent = result;
+
+                const li = document.createElement('li');
+                li.textContent = `Result: ${result}`;
+                resultList.appendChild(li);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
